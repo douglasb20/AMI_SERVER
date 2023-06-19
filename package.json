@@ -13,11 +13,13 @@
     "asterisk-ami-client": "^1.1.5",
     "cors": "^2.8.5",
     "express": "^4.18.2",
+    "express-ws": "^5.0.2",
     "ws": "^8.13.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
+    "@types/express-ws": "^3.0.1",
     "@types/ws": "^8.5.5",
     "env-cmd": "^10.1.0",
     "typescript": "^5.1.3"

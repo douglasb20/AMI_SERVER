@@ -1,59 +1,57 @@
-import WS from 'ws';
+// import WS from 'ws';
 // @ts-ignore
 import AMI from 'asterisk-ami-client';
 import express from 'express';
-import http from 'http';
-import cors from 'cors'
+import expressWs from 'express-ws';
 
 try {
-    const app = express();
-    const server = http.createServer();
-    const ami = new AMI({ reconnect: true, keepAlive: true });
+    const { app, getWss } = expressWs(express());
+    const port            = process.env.PORT || 8080;
+    const ami             = new AMI({ reconnect: true, keepAlive: true });
     
-    // app.use(cors());
+    expressWs(app);
     
-    ami.connect(process.env.USER_AMI, process.env.PASS_AMI, { host: process.env.HOST_AMI, port: 5038,keepAlive: true }).then(function (e:any) {
+    app.ws("/amiserver", async (ws, req) => {
+        await ami.connect(process.env.USER_AMI, process.env.PASS_AMI, { host: process.env.HOST_AMI, port: 5038, keepAlive: true });
+        
         console.log('Connected to AMI');
-        const wss = new WS.Server({server});
+        console.log('Client connected');
         
-        wss.on('connection', function connection(ws) {
-            console.log('Client connected');
-            
-            ws.on('message', function incoming(message) {
-                let action = JSON.parse(message.toString());
-                
-                ami.action(action, true)
-                .catch((error:any) => console.log(error));
-                
-                console.log('Received message:', action);
-            });
-            
-            ami.on('event', (event:any) => {
-                // Converte o objeto de evento em uma string JSON
-                const message = JSON.stringify(event);
-        
-                // Envia a mensagem para todos os clientes WebSocket conectados
-                ws.send(message);
-            })
-            ws.on("close", function () {
-                ws.close();
-                console.log("Conexao finalizado");
-                if (wss.clients.size === 0) {
-                    ami.action({
-                        Action: "Logoff"
-                    })
-                }
-            })
-        })
-        
-    }).catch((error: any) => console.log(error))
+        let wss = getWss();
 
-    app.get("/", (req, res) => {
-        res.send("Olá")
+        ami.action({
+            Action   : "SIPpeers",
+        }, true)
+        
+        ws.on('message', function (message: string) {
+        
+            let action = JSON.parse(message.toString());
+
+            ami.action(action, true)
+            .catch((error:any) => console.log(error));
+            
+            console.log('Received message:', action);
+        });
+        
+        ami.on('event', (event:any) => {
+            // Converte o objeto de evento em uma string JSON
+            const message = JSON.stringify(event);
+    
+            // Envia a mensagem para todos os clientes WebSocket conectados
+            ws.send(message);
+        })
+        ws.on("close", function () {
+            ws.close();
+            console.log("Conexao finalizado");
+            if (wss.clients.size === 0) {
+                ami.action({
+                    Action: "Logoff"
+                })
+            }
+        })
     })
 
-    const port = process.env.PORT || 8080;
-    server.listen(port, () => {
+    app.listen(port, () => {
         console.log('server runs on port ', port);
     })
     
