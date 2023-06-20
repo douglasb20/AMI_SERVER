@@ -19,7 +19,7 @@ try {
 
     console.log('Connected to AMI');
 
-    var allowedOrigins = ['http://sip.local.com'];
+    var allowedOrigins = [process.env.URL_ORIGIN];
     expressWs(app);
 
     app.use(bodyParser.json());
