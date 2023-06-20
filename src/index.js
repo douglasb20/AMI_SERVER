@@ -26,7 +26,7 @@ try {
     ami.connect(process.env.USER_AMI, process.env.PASS_AMI, { host: process.env.HOST_AMI, port: 5038, keepAlive: true })
         .then(() => amiConected = true);
     console.log('Connected to AMI');
-    var allowedOrigins = ['http://sip.local.com'];
+    var allowedOrigins = [process.env.URL_ORIGIN];
     (0, express_ws_1.default)(app);
     app.use(body_parser_1.default.json());
     app.use((0, cors_1.default)({
