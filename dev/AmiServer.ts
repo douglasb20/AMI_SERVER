@@ -17,7 +17,8 @@ const AmiServer = (ws, getWss, ami) => {
     
         let action = JSON.parse(message.toString());
 
-        ami.action(action, true)
+        ami
+        .action(action, true)
         .catch((error:any) => console.log(error));
         
         console.log('Received message:', action);
