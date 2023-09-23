@@ -16,7 +16,6 @@ const asterisk_ami_client_1 = __importDefault(require("asterisk-ami-client"));
 const express_1 = __importDefault(require("express"));
 const express_ws_1 = __importDefault(require("express-ws"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const cors_1 = __importDefault(require("cors"));
 const AmiServer_1 = __importDefault(require("./AmiServer"));
 try {
     const { app, getWss } = (0, express_ws_1.default)((0, express_1.default)());
@@ -29,18 +28,6 @@ try {
     var allowedOrigins = [process.env.URL_ORIGIN];
     (0, express_ws_1.default)(app);
     app.use(body_parser_1.default.json());
-    app.use((0, cors_1.default)({
-        origin: function (origin, callback) {
-            if (!origin)
-                return callback(null, true);
-            if (allowedOrigins.indexOf(origin) === -1) {
-                var msg = 'The CORS policy for this site does not ' +
-                    'allow access from the specified Origin.';
-                return callback(new Error(msg), false);
-            }
-            return callback(null, true);
-        }
-    }));
     app.ws("/amiserver", (ws, req) => __awaiter(void 0, void 0, void 0, function* () {
         if (amiConected) {
             (0, AmiServer_1.default)(ws, getWss, ami);
