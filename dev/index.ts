@@ -11,16 +11,18 @@ import AmiServer from './AmiServer';
 try {
     const { app, getWss } = expressWs(express());
     const port            = process.env.PORT || 8080;
-    const ami             = new AMI({ reconnect: true, keepAlive: true });
+    const ami             = new AMI({ reconnect: true, keepAlive: true, maxAttemptsCount: 3 });
     let amiConected       = false;
 
     ami
         .connect(process.env.USER_AMI, process.env.PASS_AMI, { host: process.env.HOST_AMI, port: 5038, keepAlive: true })
         .then(() => {
-            amiConected = true
+            amiConected = true;
             console.log('Connected to AMI');            
         })
-        .catch((err:any) => console.log("Error"))
+        .catch((err: any) => {
+            console.log(err);
+        })
 
 
     var allowedOrigins = [process.env.URL_ORIGIN];
@@ -53,7 +55,7 @@ try {
     });
 
     app.listen(port, () => {
-        console.log('server runs on port ', port);
+        console.log('server runs on port', port);
     });
     
 } catch (error) {

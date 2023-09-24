@@ -20,7 +20,7 @@ const AmiServer_1 = __importDefault(require("./AmiServer"));
 try {
     const { app, getWss } = (0, express_ws_1.default)((0, express_1.default)());
     const port = process.env.PORT || 8080;
-    const ami = new asterisk_ami_client_1.default({ reconnect: true, keepAlive: true });
+    const ami = new asterisk_ami_client_1.default({ reconnect: true, keepAlive: true, maxAttemptsCount: 3 });
     let amiConected = false;
     ami
         .connect(process.env.USER_AMI, process.env.PASS_AMI, { host: process.env.HOST_AMI, port: 5038, keepAlive: true })
@@ -28,7 +28,9 @@ try {
         amiConected = true;
         console.log('Connected to AMI');
     })
-        .catch((err) => console.log("Error"));
+        .catch((err) => {
+        console.log(err);
+    });
     var allowedOrigins = [process.env.URL_ORIGIN];
     (0, express_ws_1.default)(app);
     app.use(body_parser_1.default.json());
@@ -38,7 +40,7 @@ try {
         }
     }));
     app.listen(port, () => {
-        console.log('server runs on port ', port);
+        console.log('server runs on port', port);
     });
 }
 catch (error) {
