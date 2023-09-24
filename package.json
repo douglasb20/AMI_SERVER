@@ -4,6 +4,7 @@
   "description": "Server para AMI do SIP_Lanteca",
   "main": "index.js",
   "scripts": {
+    "build": "env-cmd -f .env tsc",
     "start": "env-cmd -f .env node ./src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

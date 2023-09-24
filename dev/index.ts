@@ -14,10 +14,14 @@ try {
     const ami             = new AMI({ reconnect: true, keepAlive: true });
     let amiConected       = false;
 
-    ami.connect(process.env.USER_AMI, process.env.PASS_AMI, { host: process.env.HOST_AMI, port: 5038, keepAlive: true })
-        .then(() => amiConected = true);
+    ami
+        .connect(process.env.USER_AMI, process.env.PASS_AMI, { host: process.env.HOST_AMI, port: 5038, keepAlive: true })
+        .then(() => {
+            amiConected = true
+            console.log('Connected to AMI');            
+        })
+        .catch((err:any) => console.log("Error"))
 
-    console.log('Connected to AMI');
 
     var allowedOrigins = [process.env.URL_ORIGIN];
     expressWs(app);

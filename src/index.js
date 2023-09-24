@@ -22,9 +22,13 @@ try {
     const port = process.env.PORT || 8080;
     const ami = new asterisk_ami_client_1.default({ reconnect: true, keepAlive: true });
     let amiConected = false;
-    ami.connect(process.env.USER_AMI, process.env.PASS_AMI, { host: process.env.HOST_AMI, port: 5038, keepAlive: true })
-        .then(() => amiConected = true);
-    console.log('Connected to AMI');
+    ami
+        .connect(process.env.USER_AMI, process.env.PASS_AMI, { host: process.env.HOST_AMI, port: 5038, keepAlive: true })
+        .then(() => {
+        amiConected = true;
+        console.log('Connected to AMI');
+    })
+        .catch((err) => console.log("Error"));
     var allowedOrigins = [process.env.URL_ORIGIN];
     (0, express_ws_1.default)(app);
     app.use(body_parser_1.default.json());
